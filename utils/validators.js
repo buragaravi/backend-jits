@@ -10,10 +10,6 @@ const validateVendorInput = (data) => {
     errors.phone = 'Invalid phone number format';
   }
   
-  if (data.website && !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(data.website)) {
-    errors.website = 'Invalid website URL';
-  }
-  
   if (data.description && data.description.length > 500) {
     errors.description = 'Description cannot exceed 500 characters';
   }
