@@ -377,6 +377,7 @@ app.use('/api/transfers', require('./routes/transferRoutes'));
 app.use('/api/transactions', require('./routes/transactionRoutes'));
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/experiments', require('./routes/experimentRoutes'));
+app.use('/api/courses', require('./routes/courseRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/products', productRoutes);
 app.use('/api/vendors', vendorRoutes);
@@ -392,7 +393,7 @@ app.use('/api/others', require('./routes/otherProductRoutes'));
 app.use(errorHandler);
 
 // Run expiry alerts
-checkForExpiringChemicals();
+// checkForExpiringChemicals();
 
 // Start server with keep-alive fixes
 const PORT = process.env.PORT || 7000;
