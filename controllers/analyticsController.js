@@ -380,7 +380,7 @@ exports.getFacultyAnalytics = asyncHandler(async (req, res) => {
 
 // @desc    Get predictive analytics
 // @route   GET /api/analytics/predictive
-// @access  Admin, Central Lab Admin
+// @access  Admin, Central Store Admin
 exports.getPredictiveAnalytics = asyncHandler(async (req, res) => {
   if(!['admin', 'central_store_admin'].includes(req.user.role)) {
     return res.status(403).json({ error: 'Access denied' });

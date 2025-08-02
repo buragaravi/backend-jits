@@ -13,7 +13,7 @@ const {
 
 // @desc    Create a new glassware transaction
 // @route   POST /api/glassware-transactions/create
-// @access  Private (Lab Assistant, Central Lab Admin, Admin)
+// @access  Private (Lab Assistant, Central Store Admin, Admin)
 router.post('/create', 
   authenticate, 
   authorizeRoles(['lab_assistant', 'central_store_admin', 'admin']),
@@ -23,7 +23,7 @@ router.post('/create',
 
 // @desc    Get all glassware transactions
 // @route   GET /api/glassware-transactions/all
-// @access  Private (Central Lab Admin, Admin)
+// @access  Private (Central Store Admin, Admin)
 router.get('/all', 
   authenticate, 
   authorizeRoles(['central_store_admin', 'admin']),
@@ -33,7 +33,7 @@ router.get('/all',
 
 // @desc    Get transactions for a specific lab
 // @route   GET /api/glassware-transactions/lab/:labId
-// @access  Private (Lab Assistant for own lab, Central Lab Admin, Admin)
+// @access  Private (Lab Assistant for own lab, Central Store Admin, Admin)
 router.get('/lab/:labId', 
   authenticate, 
   // Custom middleware to check if user can access lab data
@@ -42,7 +42,7 @@ router.get('/lab/:labId',
     const userLabId = req.user.labId;
     const requestedLabId = req.params.labId;
     
-    // Admin and central lab admin can access all labs
+    // Admin and Central Store admin can access all labs
     if (['admin', 'central_store_admin'].includes(userRole)) {
       return next();
     }
@@ -72,7 +72,7 @@ router.get('/glassware/:glasswareId',
 
 // @desc    Get transaction statistics
 // @route   GET /api/glassware-transactions/stats
-// @access  Private (Central Lab Admin, Admin)
+// @access  Private (Central Store Admin, Admin)
 router.get('/stats', 
   authenticate, 
   authorizeRoles(['central_store_admin', 'admin']),
@@ -82,7 +82,7 @@ router.get('/stats',
 
 // @desc    Bulk allocation of glassware to labs
 // @route   POST /api/glassware-transactions/allocate
-// @access  Private (Central Lab Admin, Admin)
+// @access  Private (Central Store Admin, Admin)
 router.post('/allocate', 
   authenticate, 
   authorizeRoles(['central_store_admin', 'admin']),
@@ -140,7 +140,7 @@ router.post('/allocate',
 
 // @desc    Bulk transfer of glassware between labs
 // @route   POST /api/glassware-transactions/transfer
-// @access  Private (Central Lab Admin, Admin)
+// @access  Private (Central Store Admin, Admin)
 router.post('/transfer', 
   authenticate, 
   authorizeRoles(['central_store_admin', 'admin']),

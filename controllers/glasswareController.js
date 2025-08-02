@@ -85,7 +85,7 @@ const addGlasswareToCentral = asyncHandler(async (req, res) => {
         toLabId: 'central-store',
         condition: 'good',
         batchId,
-        notes: `Initial entry to central lab`,
+        notes: `Initial entry to Central Store`,
         createdBy: req.userId || req._id || new mongoose.Types.ObjectId('68272133e26ef88fb399cd75') // Fallback admin ID
       });
 
@@ -112,7 +112,7 @@ const addGlasswareToCentral = asyncHandler(async (req, res) => {
       toLabId: 'central-store',
       condition: 'good',
       batchId,
-      notes: `Additional stock entry to central lab`,
+      notes: `Additional stock entry to Central Store`,
       createdBy: req.userId || req._id || new mongoose.Types.ObjectId('68272133e26ef88fb399cd75') // Fallback admin ID
     });
 
@@ -202,7 +202,7 @@ const allocateGlasswareToLab = asyncHandler(async (req, res) => {
           allocationResults.push({
             glasswareId,
             success: false,
-            message: 'Glassware not found in central lab or out of stock'
+            message: 'Glassware not found in Central Store or out of stock'
           });
           hasErrors = true;
           continue;
@@ -222,7 +222,7 @@ const allocateGlasswareToLab = asyncHandler(async (req, res) => {
           allocationResults.push({
             glasswareId,
             success: false,
-            message: 'Insufficient stock in central lab'
+            message: 'Insufficient stock in Central Store'
           });
           hasErrors = true;
           continue;
@@ -275,7 +275,7 @@ const allocateGlasswareToLab = asyncHandler(async (req, res) => {
             toLabId,
             condition: 'good',
             batchId: central.batchId,
-            notes: `Allocated from central lab to ${toLabId}`,
+            notes: `Allocated from Central Store to ${toLabId}`,
             createdBy: req.user?._id || req.userId || new mongoose.Types.ObjectId('68272133e26ef88fb399cd75')
           }], { session });
 
@@ -291,7 +291,7 @@ const allocateGlasswareToLab = asyncHandler(async (req, res) => {
             success: false,
             allocated: totalAllocated,
             required: quantity,
-            message: 'Insufficient stock in central lab (partial allocation)'
+            message: 'Insufficient stock in Central Store (partial allocation)'
           });
           hasErrors = true;
         } else {
@@ -430,7 +430,7 @@ const getGlasswareStock = asyncHandler(async (req, res) => {
   }
 });
 
-// Get available glassware in central lab (for allocation forms)
+// Get available glassware in Central Store (for allocation forms)
 const getCentralAvailableGlassware = asyncHandler(async (req, res) => {
   try {
     const stock = await GlasswareLive.find({ labId: 'central-store' })

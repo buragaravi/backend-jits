@@ -12,7 +12,7 @@ const indentSchema = new mongoose.Schema({
     required: true,
   },
   labId: { type: String }, // Required for lab assistant indents
-  vendorName: { type: String }, // Only for central lab admin
+  vendorName: { type: String }, // Only for Central Store admin
   chemicals: [
     {
       chemicalName: { type: String, required: true },

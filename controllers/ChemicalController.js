@@ -495,13 +495,13 @@ exports.allocateChemicalsToLab = asyncHandler(async (req, res) => {
   }
 });
 
-// Get all central lab master chemicals
+// Get all Central Store master chemicals
 exports.getCentralMasterChemicals = asyncHandler(async (req, res) => {
   const chemicals = await ChemicalMaster.find().sort({ createdAt: -1 });
   res.status(200).json(chemicals);
 });
 
-// Get live stock of central lab (frontend sees displayName)
+// Get live stock of Central Store (frontend sees displayName)
 exports.getCentralLiveStock = asyncHandler(async (req, res) => {
   const stock = await ChemicalLive.find({ labId: 'central-store' })
     .select('displayName quantity unit expiryDate chemicalMasterId')

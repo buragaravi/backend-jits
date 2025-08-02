@@ -36,7 +36,7 @@ exports.createLabIndent = asyncHandler(async (req, res) => {
   res.status(201).json({ msg: 'Lab indent submitted', indent });
 });
 
-// CENTRAL LAB ADMIN: Create new draft indent
+// Central Store ADMIN: Create new draft indent
 exports.createDraftIndent = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
@@ -72,7 +72,7 @@ exports.getLabAssistantIndents = asyncHandler(async (req, res) => {
   res.status(200).json(indents);
 });
 
-// CENTRAL LAB ADMIN: Get indents
+// Central Store ADMIN: Get indents
 exports.getCentralAdminIndents = asyncHandler(async (req, res) => {
   const { status } = req.query;
   const query = {
@@ -137,7 +137,7 @@ exports.addChemicalRemarks = async (req, res) => {
     const { indentId } = req.params;
     const { chemicalUpdates } = req.body;
     if (req.user.role !== 'central_store_admin') {
-      return res.status(403).json({ message: 'Only central lab administrators can add remarks to chemicals' });
+      return res.status(403).json({ message: 'Only Central Store administrators can add remarks to chemicals' });
     }
     const indent = await Indent.findById(indentId);
     if (!indent) {
@@ -233,7 +233,7 @@ exports.updateAllChemicalRemarks = async (req, res) => {
     const { indentId } = req.params;
     const { standardRemark } = req.body;
     if (!req.user || req.user.role !== 'central_store_admin') {
-      return res.status(403).json({ message: 'Only central lab administrators can perform batch updates' });
+      return res.status(403).json({ message: 'Only Central Store administrators can perform batch updates' });
     }
     const indent = await Indent.findById(indentId);
     if (!indent) {
@@ -267,7 +267,7 @@ exports.updateAllChemicalRemarks = async (req, res) => {
   }
 };
 
-// CENTRAL LAB ADMIN: Add chemical to existing draft indent
+// Central Store ADMIN: Add chemical to existing draft indent
 exports.addChemicalToDraft = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
@@ -291,7 +291,7 @@ exports.addChemicalToDraft = asyncHandler(async (req, res) => {
   res.status(200).json({ msg: 'Chemical(s) added to draft', indent });
 });
 
-// CENTRAL LAB ADMIN: Submit draft indent (status → pending)
+// Central Store ADMIN: Submit draft indent (status → pending)
 exports.submitDraftToPending = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
@@ -307,7 +307,7 @@ exports.submitDraftToPending = asyncHandler(async (req, res) => {
   res.status(200).json({ msg: 'Draft submitted for approval', draft });
 });
 
-// CENTRAL LAB ADMIN: Allocate chemicals from lab assistant's indent
+// Central Store ADMIN: Allocate chemicals from lab assistant's indent
 exports.allocateLabIndent = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
@@ -343,7 +343,7 @@ exports.allocateLabIndent = asyncHandler(async (req, res) => {
 
   // If status is 'allocated' or 'fulfilled', allocate chemicals to the lab
   if (['allocated', 'fulfilled'].includes(status)) {
-    // For each chemical, deduct from central lab and add to the lab's stock
+    // For each chemical, deduct from Central Store and add to the lab's stock
     const allocationResults = [];
     let allAllocated = true;
     const session = await mongoose.startSession();

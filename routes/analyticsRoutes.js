@@ -67,7 +67,7 @@ router.get(
 
 // @route   GET /api/analytics/predictive
 // @desc    Get predictive analytics and forecasts
-// @access  Private (Admin, Central Lab Admin)
+// @access  Private (Admin, Central Store Admin)
 router.get(
   '/predictive',
   authenticate,

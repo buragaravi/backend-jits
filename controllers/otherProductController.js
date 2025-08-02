@@ -104,7 +104,7 @@ const allocateOtherProductToLab = asyncHandler(async (req, res) => {
     }).sort({ expiryDate: 1, createdAt: 1 }).session(session);
     if (!centralStocks.length) {
       await session.abortTransaction();
-      return res.status(400).json({ message: 'Insufficient stock in central lab' });
+      return res.status(400).json({ message: 'Insufficient stock in Central Store' });
     }
     let totalAllocated = 0;
     for (const central of centralStocks) {
@@ -148,7 +148,7 @@ const allocateOtherProductToLab = asyncHandler(async (req, res) => {
     }
     if (totalAllocated < quantity) {
       await session.abortTransaction();
-      return res.status(400).json({ message: 'Insufficient stock in central lab (partial allocation)', allocated: totalAllocated });
+      return res.status(400).json({ message: 'Insufficient stock in Central Store (partial allocation)', allocated: totalAllocated });
     }
     await session.commitTransaction();
     res.status(200).json({ message: 'Other product allocated to lab', allocated: totalAllocated });
@@ -184,7 +184,7 @@ const getOtherProductStock = asyncHandler(async (req, res) => {
   res.status(200).json(stock);
 });
 
-// Get available other products in central lab (for allocation forms)
+// Get available other products in Central Store (for allocation forms)
 const getCentralAvailableOtherProducts = asyncHandler(async (req, res) => {
   try {
     const stock = await OtherProductLive.find({ labId: 'central-store', quantity: { $gt: 0 } })

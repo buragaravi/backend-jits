@@ -32,7 +32,7 @@ router.get('/stock',
   otherProductController.getOtherProductStock
 );
 
-// Get available other products in central lab (for allocation forms)
+// Get available other products in Central Store (for allocation forms)
 router.get('/central/available', 
   authenticate, 
   authorizeRole(['admin', 'central_store_admin', 'lab_assistant']), 

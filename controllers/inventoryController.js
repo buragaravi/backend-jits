@@ -71,10 +71,10 @@ exports.addChemical = async (req, res) => {
 
     await newChemical.save();
 
-    // Create a corresponding entry in the live stock for tracking in the central lab
+    // Create a corresponding entry in the live stock for tracking in the Central Store
     const liveChemical = new ChemicalLive({
       chemicalId: newChemical._id,
-      labId: 'central-store', // Central Lab is assumed
+      labId: 'central-store', // Central Store is assumed
       name,
       unit,
       quantity, // Starts with the same quantity as master stock
@@ -89,7 +89,7 @@ exports.addChemical = async (req, res) => {
       labId: 'central-store',
       type: 'entry', // Transaction type for adding
       date: new Date(),
-      details: `Added ${quantity} units of ${name} to central lab.`,
+      details: `Added ${quantity} units of ${name} to Central Store.`,
     });
 
     await transaction.save();
@@ -105,18 +105,18 @@ exports.allocateChemical = async (req, res) => {
   try {
     const { labId, chemicalId, quantity } = req.body;
 
-    // Find the chemical in the live stock (central lab)
+    // Find the chemical in the live stock (Central Store)
     const liveChemical = await ChemicalLive.findOne({ chemicalId, labId: 'central-store' });
 
     if (!liveChemical) {
-      return handleErrorResponse(res, 'Chemical not found in central lab stock', 404);
+      return handleErrorResponse(res, 'Chemical not found in Central Store stock', 404);
     }
 
     if (liveChemical.quantity < quantity) {
-      return handleErrorResponse(res, 'Insufficient stock in central lab for allocation', 400);
+      return handleErrorResponse(res, 'Insufficient stock in Central Store for allocation', 400);
     }
 
-    // Deduct the quantity from the central lab live stock
+    // Deduct the quantity from the Central Store live stock
     liveChemical.quantity -= quantity;
     await liveChemical.save();
 

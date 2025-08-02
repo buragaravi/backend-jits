@@ -11,7 +11,7 @@ router.get('/category/:category', productController.getProductsByCategory);
 router.get('/search', productController.searchProducts);
 router.get('/:id/inventory', productController.getProductInventoryDetails);
 
-// Protected stats route - Admin and Central Lab Admin only
+// Protected stats route - Admin and Central Store Admin only
 router.get('/stats', authenticate, authorizeRole(['admin', 'central_store_admin']), productController.getProductStats);
 
 // Test route for admin access
@@ -27,7 +27,7 @@ router.get('/admin-test', authenticate, authorizeRole(['admin', 'central_store_a
   });
 });
 
-// Protected routes - Admin and Central Lab Admin only
+// Protected routes - Admin and Central Store Admin only
 router.post('/', 
   authenticate, 
   authorizeRole(['admin', 'central_store_admin']), 
