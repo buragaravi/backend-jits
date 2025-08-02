@@ -389,6 +389,7 @@ app.use('/api/glassware', require('./routes/glasswareRoutes'));
 app.use('/api/glassware-transactions', require('./routes/glasswareTransactionRoutes'));
 app.use('/api/others', require('./routes/otherProductRoutes'));
 app.use('/api/sync', require('./routes/syncRoutes')); // Add sync routes for chemical-product integration
+app.use('/api/labs', require('./routes/labRoutes')); // Add lab management routes
 
 // Error Handler
 app.use(errorHandler);
