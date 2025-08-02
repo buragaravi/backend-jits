@@ -74,7 +74,7 @@ exports.addChemical = async (req, res) => {
     // Create a corresponding entry in the live stock for tracking in the central lab
     const liveChemical = new ChemicalLive({
       chemicalId: newChemical._id,
-      labId: 'central-lab', // Central Lab is assumed
+      labId: 'central-store', // Central Lab is assumed
       name,
       unit,
       quantity, // Starts with the same quantity as master stock
@@ -86,7 +86,7 @@ exports.addChemical = async (req, res) => {
     const transaction = new Transaction({
       chemicalId: newChemical._id,
       quantity,
-      labId: 'central-lab',
+      labId: 'central-store',
       type: 'entry', // Transaction type for adding
       date: new Date(),
       details: `Added ${quantity} units of ${name} to central lab.`,
@@ -106,7 +106,7 @@ exports.allocateChemical = async (req, res) => {
     const { labId, chemicalId, quantity } = req.body;
 
     // Find the chemical in the live stock (central lab)
-    const liveChemical = await ChemicalLive.findOne({ chemicalId, labId: 'central-lab' });
+    const liveChemical = await ChemicalLive.findOne({ chemicalId, labId: 'central-store' });
 
     if (!liveChemical) {
       return handleErrorResponse(res, 'Chemical not found in central lab stock', 404);

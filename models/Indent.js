@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const indentSchema = new mongoose.Schema({
   createdByRole: {
     type: String,
-    enum: ['lab_assistant', 'central_lab_admin'],
+    enum: ['lab_assistant', 'central_store_admin'],
     required: true,
   },
   createdBy: {

@@ -16,7 +16,7 @@ const {
 // @access  Private (Lab Assistant, Central Lab Admin, Admin)
 router.post('/create', 
   authenticate, 
-  authorizeRoles(['lab_assistant', 'central_lab_admin', 'admin']),
+  authorizeRoles(['lab_assistant', 'central_store_admin', 'admin']),
   validateGlasswareTransaction,
   glasswareTransactionController.createTransaction
 );
@@ -26,7 +26,7 @@ router.post('/create',
 // @access  Private (Central Lab Admin, Admin)
 router.get('/all', 
   authenticate, 
-  authorizeRoles(['central_lab_admin', 'admin']),
+  authorizeRoles(['central_store_admin', 'admin']),
   validateQueryParams,
   glasswareTransactionController.getAllTransactions
 );
@@ -43,7 +43,7 @@ router.get('/lab/:labId',
     const requestedLabId = req.params.labId;
     
     // Admin and central lab admin can access all labs
-    if (['admin', 'central_lab_admin'].includes(userRole)) {
+    if (['admin', 'central_store_admin'].includes(userRole)) {
       return next();
     }
     
@@ -75,7 +75,7 @@ router.get('/glassware/:glasswareId',
 // @access  Private (Central Lab Admin, Admin)
 router.get('/stats', 
   authenticate, 
-  authorizeRoles(['central_lab_admin', 'admin']),
+  authorizeRoles(['central_store_admin', 'admin']),
   validateQueryParams,
   glasswareTransactionController.getTransactionStats
 );
@@ -85,7 +85,7 @@ router.get('/stats',
 // @access  Private (Central Lab Admin, Admin)
 router.post('/allocate', 
   authenticate, 
-  authorizeRoles(['central_lab_admin', 'admin']),
+  authorizeRoles(['central_store_admin', 'admin']),
   validateGlasswareAllocation,
   async (req, res, next) => {
     // Transform bulk allocation into individual transactions
@@ -143,7 +143,7 @@ router.post('/allocate',
 // @access  Private (Central Lab Admin, Admin)
 router.post('/transfer', 
   authenticate, 
-  authorizeRoles(['central_lab_admin', 'admin']),
+  authorizeRoles(['central_store_admin', 'admin']),
   validateGlasswareTransfer,
   async (req, res, next) => {
     // Transform bulk transfer into individual transactions
