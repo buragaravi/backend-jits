@@ -378,6 +378,7 @@ app.use('/api/transactions', require('./routes/transactionRoutes'));
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/experiments', require('./routes/experimentRoutes'));
 app.use('/api/courses', require('./routes/courseRoutes'));
+app.use('/api/subjects', require('./routes/subjectRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/products', productRoutes);
 app.use('/api/vendors', vendorRoutes);
