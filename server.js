@@ -53,7 +53,7 @@ const corsOptions = {
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['Authorization']
 };
@@ -391,6 +391,7 @@ app.use('/api/glassware-transactions', require('./routes/glasswareTransactionRou
 app.use('/api/others', require('./routes/otherProductRoutes'));
 app.use('/api/sync', require('./routes/syncRoutes')); // Add sync routes for chemical-product integration
 app.use('/api/labs', require('./routes/labRoutes')); // Add lab management routes
+app.use('/api/requirements', require('./routes/requirementRoutes')); // Add requirement management routes
 
 // Error Handler
 app.use(errorHandler);
