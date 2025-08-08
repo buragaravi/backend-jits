@@ -11,7 +11,8 @@ const {
   getAuditDashboard,
   getAuditAnalytics,
   getFacultyAuditAssignments,
-  getFacultyAuditStats
+  getFacultyAuditStats,
+  getExecutionByAssignment
 } = require('../controllers/auditController');
 const authenticate = require('../middleware/authMiddleware');
 const authorizeRole = require('../middleware/roleMiddleware');
@@ -55,6 +56,13 @@ router.post('/executions/:id/complete',
   authenticate, 
   authorizeRole(['faculty']), 
   completeAuditExecution
+);
+
+// Get execution by assignment ID
+router.get('/executions/assignment/:assignmentId',
+  authenticate,
+  authorizeRole(['admin', 'faculty']),
+  getExecutionByAssignment
 );
 
 // Faculty-specific routes

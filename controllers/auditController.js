@@ -558,6 +558,30 @@ exports.getAllAuditExecutions = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Get execution by assignment ID
+// @route   GET /api/audit/executions/assignment/:assignmentId
+// @access  Private (Admin, Faculty)
+exports.getExecutionByAssignment = asyncHandler(async (req, res) => {
+  const { assignmentId } = req.params;
+  
+  const execution = await AuditExecution.findOne({ assignmentId })
+    .populate('executedBy', 'name email')
+    .populate('assignmentId', 'title assignmentId')
+    .sort({ createdAt: -1 }); // Get the most recent execution
+
+  if (!execution) {
+    return res.status(404).json({
+      success: false,
+      message: 'No execution found for this assignment'
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: execution
+  });
+});
+
 // @desc    Get audit analytics data
 // @route   GET /api/audit/analytics
 // @access  Private (Admin/Faculty)
@@ -573,28 +597,119 @@ exports.getAuditAnalytics = asyncHandler(async (req, res) => {
     activeAssignments,
     completedAssignments,
     overdueAssignments,
-    recentExecutions
+    totalExecutions,
+    completedExecutions,
+    assignments,
+    executions
   ] = await Promise.all([
     AuditAssignment.countDocuments(query),
     AuditAssignment.countDocuments({ ...query, status: { $in: ['assigned', 'in_progress'] } }),
     AuditAssignment.countDocuments({ ...query, status: 'completed' }),
     AuditAssignment.countDocuments({ ...query, status: 'overdue' }),
-    AuditExecution.find({ executedBy: req.user._id })
-      .sort({ createdAt: -1 })
-      .limit(5)
-      .populate('assignmentId', 'title')
+    AuditExecution.countDocuments(),
+    AuditExecution.countDocuments({ status: 'completed' }),
+    AuditAssignment.find(query).populate('assignedTo', 'name').populate('labs', 'labName'),
+    AuditExecution.find().populate('assignmentId', 'title').populate('executedBy', 'name')
   ]);
-  
+
+  // Calculate additional metrics
+  const avgCompletionTime = executions.filter(e => e.completedAt && e.startedAt)
+    .reduce((acc, e) => acc + (new Date(e.completedAt) - new Date(e.startedAt)), 0) / 
+    Math.max(completedExecutions, 1) / (1000 * 60 * 60); // Convert to hours
+
+  const complianceRate = totalAssignments > 0 ? (completedAssignments / totalAssignments) * 100 : 0;
+
+  // Generate trend data (last 7 days)
+  const trendData = [];
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    const dateStr = date.toISOString().split('T')[0];
+    
+    const dayExecutions = executions.filter(e => 
+      new Date(e.createdAt).toISOString().split('T')[0] === dateStr
+    ).length;
+    
+    trendData.push({
+      date: dateStr,
+      audits: dayExecutions,
+      completed: executions.filter(e => 
+        e.status === 'completed' && 
+        new Date(e.completedAt).toISOString().split('T')[0] === dateStr
+      ).length
+    });
+  }
+
+  // Category performance data
+  const categoryData = [
+    { name: 'Chemical', value: executions.filter(e => e.category === 'chemical').length },
+    { name: 'Equipment', value: executions.filter(e => e.category === 'equipment').length },
+    { name: 'Glassware', value: executions.filter(e => e.category === 'glassware').length },
+    { name: 'Others', value: executions.filter(e => e.category === 'others').length }
+  ];
+
+  // Lab performance data
+  const labGroups = {};
+  executions.forEach(e => {
+    if (e.labName) {
+      if (!labGroups[e.labName]) {
+        labGroups[e.labName] = { completed: 0, total: 0 };
+      }
+      labGroups[e.labName].total++;
+      if (e.status === 'completed') {
+        labGroups[e.labName].completed++;
+      }
+    }
+  });
+
+  const labPerformance = Object.entries(labGroups).map(([name, data]) => ({
+    lab: name,
+    completed: data.completed,
+    total: data.total,
+    percentage: data.total > 0 ? (data.completed / data.total) * 100 : 0
+  }));
+
+  // Faculty performance data
+  const facultyGroups = {};
+  assignments.forEach(a => {
+    if (a.assignedTo) {
+      const facultyName = a.assignedTo.name;
+      if (!facultyGroups[facultyName]) {
+        facultyGroups[facultyName] = { completed: 0, total: 0 };
+      }
+      facultyGroups[facultyName].total++;
+      if (a.status === 'completed') {
+        facultyGroups[facultyName].completed++;
+      }
+    }
+  });
+
+  const facultyPerformance = Object.entries(facultyGroups).map(([name, data]) => ({
+    faculty: name,
+    completed: data.completed,
+    pending: data.total - data.completed,
+    total: data.total
+  }));
+
   res.status(200).json({
     success: true,
     data: {
-      stats: {
-        totalAssignments,
-        activeAssignments,
-        completedAssignments,
-        overdueAssignments
+      overview: {
+        totalAudits: totalAssignments,
+        completedAudits: completedAssignments,
+        pendingAudits: activeAssignments,
+        overdue: overdueAssignments,
+        avgCompletionTime: Math.round(avgCompletionTime * 100) / 100,
+        complianceRate: Math.round(complianceRate * 100) / 100
       },
-      recentExecutions
+      trendData,
+      categoryData,
+      labPerformance,
+      facultyPerformance,
+      complianceHistory: trendData.map(d => ({
+        date: d.date,
+        compliance: d.audits > 0 ? (d.completed / d.audits) * 100 : 0
+      }))
     }
   });
 });
